@@ -213,7 +213,7 @@ void catchCrash(int nSignal){
         char szLine[512] = {0, };
         time_t t = time(NULL);
         tm* now = localtime(&t);
-        sprintf(szLine,"-------------------[%04d-%02d-%02d %02d:%02d:%02d][crash signal code:%d]-------------------\n",now->tm_year + 1900,now->tm_mon + 1,now->tm_mday,now->tm_hour,now->tm_min,now->tm_sec,nSignal);
+        snprintf(szLine,512,"-------------------[%04d-%02d-%02d %02d:%02d:%02d][crash signal code:%d]-------------------\n",now->tm_year + 1900,now->tm_mon + 1,now->tm_mday,now->tm_hour,now->tm_min,now->tm_sec,nSignal);
         fwrite(szLine, 1, strlen(szLine), pCrashFile);
         void* array[MAX_STACK_FRAMES];
         char** ppStrings = NULL;
@@ -222,7 +222,7 @@ void catchCrash(int nSignal){
         ppStrings = (char**)backtrace_symbols(array, nSize);
         for (int i = 0; i < nSize; ++i){
             char szLine[512] = {0, };
-            sprintf(szLine, "%d %s\n", i, ppStrings[i]);
+            snprintf(szLine,512, "%d %s\n", i, ppStrings[i]);
             fwrite(szLine, 1, strlen(szLine), pCrashFile);
             
             std::string strMsg(ppStrings[i]);
@@ -230,7 +230,7 @@ void catchCrash(int nSignal){
             size_t nPos2 = strMsg.find_last_of("]");
             std::string strAddress = strMsg.substr(nPos1 + 1, nPos2 - nPos1 -1);
             char szCmd[128] = {0, };
-            sprintf(szCmd, "addr2line -e TrafficIndex.out %s", strAddress.c_str());
+            snprintf(szCmd,128, "addr2line -e TrafficIndex.out %s", strAddress.c_str());
             FILE *pFile = popen(szCmd, "r");
             if(pFile != NULL){
                 char szBuff[1024];
